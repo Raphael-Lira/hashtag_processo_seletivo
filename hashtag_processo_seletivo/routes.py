@@ -6,6 +6,7 @@ from datetime import datetime
 from flask_login import login_required, login_user, logout_user, current_user
 from wtforms.validators import Email
 from sqlalchemy import or_
+from sqlalchemy import desc
 
 @app.route('/', methods=['GET', 'POST'])
 def homepage():
@@ -90,7 +91,11 @@ def painel(usuario):
     page = request.args.get('page', 1, type=int)  # Pega o número da página da URL
     per_page = 5  # Define o número de registros por página
     search_term = request.args.get('search_term', '')
-    webhooks = Webhook.query.filter(or_(Webhook.nome.ilike(f'%{search_term}%'), Webhook.email.ilike(f'%{search_term}%'))).paginate(page=page, per_page=5)
+
+    # Ordena os registros em ordem decrescente pelo índice
+    webhooks = Webhook.query.filter(
+        or_(Webhook.nome.ilike(f'%{search_term}%'), Webhook.email.ilike(f'%{search_term}%'))
+    ).order_by(desc(Webhook.id)).paginate(page=page, per_page=per_page)
 
     return render_template('painel.html', usuario=usuario, webhooks=webhooks)
 
