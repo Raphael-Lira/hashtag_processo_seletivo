@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Painel</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/painel.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-dark">
+    <div class="container">
+        <div class="row">
+            <div class="col-6 mt-3">
+                <div class="welcome-msg text-light">
+                    <h1>Bem-vindo {{ usuario }}!</h1>
+                </div>
+            </div>
+            <div class="col-6 mt-3">
+                <div class="d-flex justify-content-end">
+                    <a href="{{ url_for('logout') }}" class="btn btn-danger">Sair</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="panel">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col col-sm-3 col-xs-12">
+                                <h4 class="title">Painel Registros</h4>
+                            </div>
+                            <div class="col-sm-9 col-xs-12 text-right">
+                                <div class="btn_group d-flex justify-content-end">
+                                    <form class="d-flex" action="{{ url_for('painel', usuario=usuario) }}" method="GET">
+                                        <input type="text" class="form-control col" name="search_term" placeholder="Pesquisar">
+                                        <button class="btn btn-default" title="Reload" onclick=location.href="{{ url_for('painel', usuario=usuario) }}" ><i class="fa fa-sync-alt"></i></button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Data</th>
+                                    <th>Nome</th>
+                                    <th>Email</th>
+                                    <th>Status</th>
+                                    <th>Valor</th>
+                                    <th>Forma de Pagamento</th>
+                                    <th>Parcelas</th>
+                                    <th>Tratativa</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in webhooks.items %}
+                                <tr>
+                                    <td>{{ item.id }}</td>
+                                    <td>{{ item.data }}</td>
+                                    <td>{{ item.nome }}</td>
+                                    <td>{{ item.email }}</td>
+                                    <td>{{ item.status }}</td>
+                                    <td>{{ item.valor }}</td>
+                                    <td>{{ item.forma_pagamento }}</td>
+                                    <td>{{ item.parcelas }}</td>
+                                    <td>{{ item.tratativa }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="row">
+                            <div class="col col-sm-6 col-xs-6">Mostrando <b>{{ webhooks.items|length }}</b> de <b>{{ webhooks.total }}</b> valores</div>
+                            <div class="col-sm-6 col-xs-6 d-flex justify-content-end">
+                                <ul class="pagination">
+                                    {% if webhooks.has_prev %}
+                                    <li><a href="{{ url_for('painel', usuario=usuario, page=webhooks.prev_num) }}">«</a></li>
+                                    {% else %}
+                                    <li class="disabled"><span>«</span></li>
+                                    {% endif %}
+
+                                    {% for page in webhooks.iter_pages() %}
+                                    {% if page %}
+                                    <li {% if page == webhooks.page %}class="active"{% endif %}><a href="{{ url_for('painel', usuario=usuario, page=page) }}">{{ page }}</a></li>
+                                    {% else %}
+                                    <li class="disabled"><span>...</span></li>
+                                    {% endif %}
+                                    {% endfor %}
+
+                                    {% if webhooks.has_next %}
+                                    <li><a href="{{ url_for('painel', usuario=usuario, page=webhooks.next_num) }}">»</a></li>
+                                    {% else %}
+                                    <li class="disabled"><span>»</span></li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        setInterval(function(){
+            location.reload();
+        }, 60000);
+    </script>
+</body>
+</html>
