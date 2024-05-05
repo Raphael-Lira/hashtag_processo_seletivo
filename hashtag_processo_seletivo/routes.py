@@ -42,7 +42,7 @@ def webhook():
     forma_pagamento = data.get('forma_pagamento')
     parcelas = data.get('parcelas')
 
-    # Processamento do pagamento
+    # tratativa do pagamento
     tratativa = None
     if status == 'aprovado':
         print(f"Liberar acesso do e-mail: {email}")
@@ -54,7 +54,7 @@ def webhook():
         print(f"Acesso revogado do e-mail : {email}")
         tratativa = 'Acesso revogado'
 
-    # Salvar os dados no banco de dados
+    # Salvar os dados
     webhook = Webhook(data=datetime.now(), nome=nome, email=email, status=status, valor=valor, forma_pagamento=forma_pagamento, parcelas=parcelas, tratativa=tratativa)
     database.session.add(webhook)
     database.session.commit()
@@ -79,7 +79,7 @@ def criar_conta():
             return redirect(url_for('painel', usuario=usuario.username))
         else:
             error_message = 'Token inválido'
-    else:  # Se o formulário não foi submetido
+    else:  
         if form_registrar_conta.senha.data != form_registrar_conta.confirmacao_senha.data:
             error_message = 'As senhas não coincidem. Por favor, tente novamente.'
     return render_template('criar_conta.html', form=form_registrar_conta, error_message=error_message )
@@ -88,11 +88,11 @@ def criar_conta():
 @app.route('/painel/<usuario>', methods=['GET', 'POST'])
 @login_required 
 def painel(usuario):
-    page = request.args.get('page', 1, type=int)  # Pega o número da página da URL
-    per_page = 5  # Define o número de registros por página
+    page = request.args.get('page', 1, type=int)  # Pega o o  numero da pagina
+    per_page = 5  # Define o numero de registros por pagina
     search_term = request.args.get('search_term', '')
 
-    # Ordena os registros em ordem decrescente pelo índice
+    # Ordena os registros em invertida
     webhooks = Webhook.query.filter(
         or_(Webhook.nome.ilike(f'%{search_term}%'), Webhook.email.ilike(f'%{search_term}%'))
     ).order_by(desc(Webhook.id)).paginate(page=page, per_page=per_page)
