@@ -69,7 +69,7 @@ def criar_conta():
     error_message = None
     if form_registrar_conta.validate_on_submit():
         if form_registrar_conta.token.data == 'uhdfaAADF123':
-            senha_crypt = bcrypt.generate_password_hash(form_registrar_conta.senha.data)
+            senha_crypt = bcrypt.generate_password_hash(form_registrar_conta.senha.data).decode('utf-8')
             print(senha_crypt)
             usuario = User(username=form_registrar_conta.username.data, email=form_registrar_conta.email.data,
                             senha=senha_crypt, token=form_registrar_conta.token.data)
